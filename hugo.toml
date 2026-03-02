@@ -1,0 +1,4 @@
+baseURL = 'https://itekxtra.com/'
+languageCode = 'en-us'
+title = 'itekxtra | DevOps Portfolio'
+theme = 'ananke'  # (Or whatever theme you are using)

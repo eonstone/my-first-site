@@ -1,0 +1,37 @@
+name: Build and Deploy Hugo to S3
+
+on:
+  push:
+    branches:
+      - main  # Trigger only on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive  # Crucial for themes
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Build Site
+        run: hugo --minify  # This creates the 'public' folder
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1 # Your specific region
+
+      - name: Deploy to S3
+        run: |
+          # Sync the 'public' folder to the 'itekxtra.com' bucket
+          aws s3 sync public/ s3://itekxtra.com --delete
